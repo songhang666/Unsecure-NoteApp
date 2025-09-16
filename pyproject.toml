@@ -1,0 +1,14 @@
+[tool.djlint]
+indent = 2
+profile = "django"
+format_attribute_template_tags = true
+format_js = true
+format_css = true
+max_line_length = 120
+max_attribute_length = 70
+preserve_leading_space = false
+preserve_blank_lines = false
+blank_line_after_tag = "load,extends,include"
+blank_line_before_tag = "load,extends,include"
+close_void_tags = false
+ignore = "H006,H021,H030,H031"

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+{% load static %}
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}
+        {{ title }} - NoteApp
+      {% endblock title %}
+    </title>
+    <link rel="shortcut icon"
+          type="image/png"
+          href="{% static "images/favicon.ico" %}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+          rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          rel="stylesheet" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="{% url "splash" %}"> <i class="fas fa-sticky-note"></i> Unsecure NoteApp </a>
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item" hidden>
+              <a class="nav-link" href="{% url "debug_settings" %}"></a>
+            </li>
+            {% if user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url "note_list" %}"> <i class="fas fa-list"></i> My Notes </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url "note_create" %}"> <i class="fas fa-plus"></i> New Note </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url "note_search" %}"> <i class="fas fa-magnifying-glass"></i> Search Notes </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle"
+                   href="#"
+                   role="button"
+                   data-bs-toggle="dropdown">
+                  <i class="fas fa-user"></i> {{ user.full_name|default:user.username }}
+                </a>
+                <ul class="dropdown-menu">
+                  <li>
+                    <a href="{% url "change_password" %}" class="dropdown-item">
+                      <i class="fas fa-key"></i> Change Password
+                    </a>
+                  </li>
+                  <li>
+                    <form action="{% url "logout" %}" method="post">
+                      {% csrf_token %}
+                      <button class="dropdown-item" type="submit">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url "login" %}"> <i class="fas fa-sign-in-alt"></i> Login </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url "register" %}"> <i class="fas fa-user-plus"></i> Register </a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- Main Content -->
+    <div class="container mt-4">
+      <!-- Messages -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+               role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      <!-- Page Content -->
+      {% block content %}
+      {% endblock content %}
+    </div>
+    <!-- Footer -->
+    <footer class="bg-light mt-5 py-4">
+      <div class="container text-center">
+        <p class="text-muted mb-0">
+          © 2025 Unsecure NoteApp. Built with Django & Bootstrap. Icons by
+          <a href="https://fontawesome.com/">fontawesome.com</a> and <a href="https://www.flaticon.com">flaticon.com</a>
+        </p>
+      </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
