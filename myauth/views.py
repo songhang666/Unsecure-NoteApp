@@ -34,7 +34,10 @@ def login_view(request):
                 login(request, user)
                 return redirect("note_list")
             else:
-                logger.debug(form.data)
+                logger.warning(
+                    "Failed login attempt",
+                    extra={"username": form.cleaned_data.get("username")}
+                )
                 form.add_error(None, "Invalid username or password.")
 
     else:
