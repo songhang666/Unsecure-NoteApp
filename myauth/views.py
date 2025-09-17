@@ -39,7 +39,10 @@ def login_view(request):
                 login(request, user)
                 return redirect("note_list")
             else:
-                logger.debug(form.data)
+                logger.warning(
+                    "Failed login attempt",
+                    extra={"username": form.cleaned_data.get("username")}
+                )
                 form.add_error(None, "Invalid username or password.")
 
     else:
@@ -144,7 +147,8 @@ def confirm_password_reset_view(request):
             user = User.objects.filter(email=email).first()
             code = ResetPasswordCode.objects.filter(code=reset_code, user=user).first()
             if code:
-                logger.info(f"Setting new password for user {user.username} with password {new_password}")
+                logger.info(f"Setting new password for user {user.username} ")
+
                 user.set_password(new_password)
                 user.save()
                 code.delete()
