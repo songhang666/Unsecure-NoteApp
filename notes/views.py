@@ -149,28 +149,25 @@ def note_search_view(request):
     """Search for notes by title. Show all public notes that match the search query."""
     if request.method == 'GET':
         # don't ask why 'q' is used, it's just a common convention
-        query = request.GET.get('q', '')
-        logger.info("Search query: %s", query)
-        with connection.cursor() as cursor:
-            cursor.execute(f"SELECT * FROM notes_note WHERE LOWER(title) LIKE LOWER('%{query}%') AND is_public = True")
-            notes = cursor.fetchall()
-            logger.info("Search results: %s", notes)
-            if notes:
-                notes = [Note(
-                    id=row[0], 
-                    title=row[1], 
-                    content=row[2], 
-                    image=row[3], 
-                    created_at=row[4], 
-                    updated_at=row[5], 
-                    is_public=row[6], 
-                    author_id=row[7]) for row in notes]
+        query = request.GET.get('q', '').strip()
 
-        return render(request, 'notes/note_search.html', {
-            'notes': notes,
-            'query': query,
-            'title': 'Search Results'
-        })
+        notes = Note.objects.filter(is_public=True)
+
+        if query:
+            notes = notes.filter(title__icontains=query)
+
+        # load author in one query
+        notes = notes.select_related('author')
+
+        return render(
+            request,
+            'notes/note_search.html',
+            {
+                'notes': notes,
+                'query': query,
+                'title': 'Search Results',
+            }
+        )
     else:
         raise Http404
 
