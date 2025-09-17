@@ -168,6 +168,11 @@ LOGGING = {
             "level": "INFO",
             "propagate": True,
         },
+        "myauth": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
         "noteapp": {
             "handlers": ["file"],
             "level": "DEBUG",
