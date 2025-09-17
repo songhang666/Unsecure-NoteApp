@@ -81,8 +81,9 @@ def note_detail_view(request, pk):
 def note_edit_view(request, pk):
     """Render the form to edit an existing note."""
     logger.info("Rendering note edit form for note ID: %s", pk)
-    note = get_object_or_404(Note, pk=pk)
-    
+    #Andrew V7
+    note = get_object_or_404(Note, pk=pk, author=request.user)
+
     if request.method == 'POST':
         form = NoteForm(request.POST, request.FILES, instance=note)
         if form.is_valid():

@@ -11,6 +11,11 @@ from django.utils.crypto import get_random_string
 from myauth.forms import UserCreationForm, ConfirmRegistrationForm, LoginForm, ResetPasswordForm, ConfirmPasswordResetForm, ChangePasswordForm
 from myauth.models import RegistrationCode, ResetPasswordCode
 
+#Andrew V13
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+
+
 from noteapp import mail_utils
 
 logger = logging.getLogger(__name__)
@@ -152,26 +157,29 @@ def confirm_password_reset_view(request):
     
     return render(request, 'myauth/confirm_password_reset.html', {'form': form, 'title': 'Confirm Password Reset'})
 
+#Andrew V13
 @login_required
 def change_password_view(request):
-    """Change the user's password."""
-    print(request.user)
     if request.method == 'POST':
-        form = ChangePasswordForm(request.POST)
-        if form.is_valid():
-            logger.info("Changing password for user: %s", request.user.username)
-            user = request.user
-            new_password = form.cleaned_data['new_password']
-            user.set_password(new_password)
-            user.save()
+        form = PasswordChangeForm(request.user, request.POST)
+        for f in form.fields.values():
+            css = f.widget.attrs.get('class', '')
+            f.widget.attrs['class'] = (css + ' form-control').strip()
+            f.widget.attrs.setdefault('autocomplete', 'new-password')
 
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
             messages.success(request, 'Your password has been changed successfully.')
-            login(request, authenticate(username=user.username, password=new_password))
-            return redirect('note_list')
+            return redirect('/mynotes/')   
     else:
-        form = ChangePasswordForm()
-    
-    return render(request, 'myauth/change_password.html', {'form': form, 'title': 'Change Password'})
+        form = PasswordChangeForm(request.user)
+        for f in form.fields.values():
+            css = f.widget.attrs.get('class', '')
+            f.widget.attrs['class'] = (css + ' form-control').strip()
+            f.widget.attrs.setdefault('autocomplete', 'new-password')
+
+    return render(request, 'myauth/change_password.html', {'form': form})
 
 
 """HELPER FUNCTIONS"""
