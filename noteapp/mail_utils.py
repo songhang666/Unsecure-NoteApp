@@ -42,4 +42,4 @@ def send_email(to_email, subject, content):
         [to_email]
     )
     to_send.send()
-    logger.info("Email sent to %s with subject: %s", to_email, subject)
+    logger.info("Verification email has been sent.")
