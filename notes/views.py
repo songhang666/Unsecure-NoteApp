@@ -150,13 +150,18 @@ def note_search_view(request):
     if request.method == 'GET':
         # don't ask why 'q' is used, it's just a common convention
         query = request.GET.get('q', '').strip()
-
+            
         notes = Note.objects.filter(is_public=True)
 
         if query:
             notes = notes.filter(title__icontains=query)
 
-        # load author in one query
+        logger.info("Search query run", extra={
+            "user_id": getattr(request.user, "id", None),
+            "query": query,
+            "results_count": len(notes),
+        })
+
         notes = notes.select_related('author')
 
         return render(
