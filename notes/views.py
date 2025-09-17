@@ -162,7 +162,13 @@ def note_search_view(request):
             "results_count": len(notes),
         })
 
+        # append author info
         notes = notes.select_related('author')
+        # filter columns
+        notes = notes.only(
+            "id", "title", "author__username", "author__email",
+            "created_at", "is_public", "content", "image"
+        )
 
         return render(
             request,
